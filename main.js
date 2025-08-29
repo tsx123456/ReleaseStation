@@ -15,6 +15,11 @@ import './uni.promisify.adaptor'
 Vue.config.productionTip = false
 
 
+import globalConfig from './common/global.js'
+
+Vue.prototype.$config = globalConfig
+
+
 // 获取刘海和底部横条高度
 const systemInfo = uni.getSystemInfoSync()
 const topSafeHeight = systemInfo.safeAreaInsets ?

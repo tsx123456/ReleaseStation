@@ -13,7 +13,8 @@
 		},
 		data() {
 			return {
-				swiperHeight: 0
+				swiperHeight: 0,
+				devUrl: setting.CURRENT_ENVIRONMENT,
 			};
 		},
 		mounted() {

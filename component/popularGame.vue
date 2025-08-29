@@ -3,8 +3,8 @@
 		<div class="companyBox" v-if="imageList.length > 0">
 			<image class="svgIcon" style="margin-right: 1rem;" src="@/static/APP/img_logo.png" />
 			<div class="svgIconList">
-				<image class="svgIcon" v-for="(item, i) in imageList" :key="i" :src="item.img"
-					@click="openExternalLink(item.url)" />
+				<image class="svgIcon" v-for="(item, i) in imageList" :key="i" :src="devUrl + '/api/' + item.imageUrl"
+					@click="openExternalLink(item.link)" />
 			</div>
 		</div>
 

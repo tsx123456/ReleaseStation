@@ -19,12 +19,14 @@
 		getFcPGList,
 		applicationJumpLink
 	} from '@/api/jsonbin.js';
-	
+
 	import {
-		getClientGetPackageInfo
+		getClientGetThirdApp,
+		getClientGetBanners,
+		getClientGetPlatformList
 	} from '@/api/home.js';
-	
-	
+
+
 	export default {
 		name: "HomePage",
 		components: {
@@ -54,36 +56,54 @@
 		methods: {
 			async open() {
 				try {
-					const swiperRes = await getFcSwiperList();
-					this.imageList = swiperRes.data;
+					// const swiperRes = await getFcSwiperList();
+					// this.imageList = swiperRes.data;
+					
+					getClientGetBanners().then(data => {
+						if (data.code == this.$config.code) {
+							this.imageList = data.data.list;
+						}
+					})
 
 					const jumpLinkRes = await applicationJumpLink();
 					this.applicationJumpLinkList = jumpLinkRes.data;
 					
-					// const fcPGRes = await getFcPGList();
-					// this.data = this.transformData(fcPGRes.data);
-					
-					
-					getClientGetPackageInfo().then(data => {
-						if (data.code == 0) {
-							this.data = this.transformData(data.list);
+					getClientGetThirdApp().then(data => {
+						if (data.code == this.$config.code) {
+							this.applicationJumpLinkList = data.data.list;
 						}
 					})
-					
+
+					// const fcPGRes = await getFcPGList();
+					// this.data = this.transformData(fcPGRes.data);
+
+					const postData = {
+						"page": 1,
+						"pageSize": 1000
+					}
+					getClientGetPlatformList(postData).then(data => {
+						if (data.code == this.$config.code) {
+							this.data = this.transformData(data.data.list);
+						}
+					})
+
 				} catch (err) {
 					console.error("err：", err);
 				}
 			},
-			
+
 			transformData(data) {
-			  return data.map(item => {
-			    const { imageUrl, ...rest } = item;
-			    return {
-			      ...rest,
-			      image: imageUrl,
-			      isStarred: false
-			    };
-			  });
+				return data.map(item => {
+					const {
+						imageUrl,
+						...rest
+					} = item;
+					return {
+						...rest,
+						image: imageUrl,
+						isStarred: false
+					};
+				});
 			}
 
 		}
