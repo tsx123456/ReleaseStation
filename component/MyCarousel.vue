@@ -1,21 +1,34 @@
 <template>
 	<view class="my-carousel">
-		<u-swiper :list="images" keyName="img" :autoplay="true" :circular="true" :indicator="true" indicatorMode="dot"
-			:height="swiperHeight" radius="1rem" mode="widthFix" bgColor="transparent"
+		<u-swiper :list="formattedImages" keyName="imageUrl" :autoplay="true" :circular="true" :indicator="true"
+			indicatorMode="dot" :height="swiperHeight" radius="1rem" mode="widthFix" bgColor="transparent"
 			@click="handleSwiperClick"></u-swiper>
 	</view>
 </template>
 
 <script>
+	import setting from "@/common/config.js";
+
 	export default {
 		props: {
-			images: Array
+			images: {
+				type: Array,
+				default: () => []
+			}
 		},
 		data() {
 			return {
 				swiperHeight: 0,
-				devUrl: setting.CURRENT_ENVIRONMENT,
+				devUrl: setting.CURRENT_ENVIRONMENT
 			};
+		},
+		computed: {
+			formattedImages() {
+				return this.images.map(item => ({
+					...item,
+					imageUrl: this.devUrl + "/api/" + item.imageUrl
+				}));
+			}
 		},
 		mounted() {
 			this.calcHeight();
@@ -25,13 +38,13 @@
 			calcHeight() {
 				const screenWidth = uni.getSystemInfoSync().windowWidth - 20;
 				const aspectRatio = 1020 / 300;
-				this.swiperHeight = screenWidth / aspectRatio + 'px';
+				this.swiperHeight = screenWidth / aspectRatio + "px";
 			},
 			handleSwiperClick(index) {
-				const url = this.images[index].url;
+				const url = this.images[index].link;
 				if (url) {
 					uni.navigateTo({
-						url: '/pages/webview/webview?url=' + encodeURIComponent(url)
+						url: "/pages/webview/webview?url=" + encodeURIComponent(url)
 					});
 				}
 			}

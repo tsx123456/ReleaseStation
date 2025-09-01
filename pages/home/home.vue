@@ -65,8 +65,8 @@
 						}
 					})
 
-					const jumpLinkRes = await applicationJumpLink();
-					this.applicationJumpLinkList = jumpLinkRes.data;
+					// const jumpLinkRes = await applicationJumpLink();
+					// this.applicationJumpLinkList = jumpLinkRes.data;
 					
 					getClientGetThirdApp().then(data => {
 						if (data.code == this.$config.code) {

@@ -24,8 +24,8 @@
 <script>
 	import UQRCode from 'uqrcodejs'
 	import {
-		getPcdownload
-	} from "@/api/pcDownload.js"
+		getClientGetPackageInfo
+	} from '@/api/home.js';
 
 	export default {
 		data() {
@@ -42,7 +42,7 @@
 		},
 		methods: {
 			open() {
-				getPcdownload().then(data => {
+				getClientGetPackageInfo().then(data => {
 					if (data.meta.code == 0) {
 						this.apkDownLoadUrl = data.data.apk_url
 						this.setDownloadUrl()
