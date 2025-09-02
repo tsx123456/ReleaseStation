@@ -43,7 +43,7 @@
 		methods: {
 			open() {
 				getClientGetPackageInfo().then(data => {
-					if (data.meta.code == 0) {
+					if (data.code == 0) {
 						this.apkDownLoadUrl = data.data.apk_url
 						this.setDownloadUrl()
 					}
@@ -164,15 +164,14 @@
 				}
 			},
 			openLink() {
-				const platform = "null"
 			    // #ifdef APP-PLUS
 			    plus.runtime.openURL(this.downloadUrl);
-			    platform = "APP";
+			    this.platform = "APP";
 			    // #endif
 			
 			    // #ifdef H5
 			    window.open(this.downloadUrl, '_blank');
-			    platform = "H5";
+			    this.platform = "H5";
 			    // #endif
 			
 			    // 发送 GA4 事件
@@ -180,7 +179,7 @@
 			        gtag('event', 'clickDownload', {
 			            'event_category': 'download_actions',
 			            'event_label': 'download_link_click',
-			            'platform': platform,
+			            'platform': this.platform,
 			            'value': 1
 			        });
 			    }

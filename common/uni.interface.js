@@ -1,117 +1,110 @@
 /**
- * 通用uni-app网络请求
- * 基于 Promise 对象实现更简单的 request 使用方式，支持请求和响应拦截
+ * 通用 uni-app 网络请求封装
+ * 功能：
+ *  - GET / POST 请求
+ *  - 支持 Token 自动注入
+ *  - 自动时间戳
+ *  - 支持 Loading 显示
+ *  - 请求/响应日志
  */
 import setting, {
-	CURRENT_ENVIRONMENT,
-	ENVIRONMENT
+	CURRENT_ENVIRONMENT
 } from "./config.js";
-import po from "./lang/po.js";
-import utils from "./utils.js";
-import store from "@/store"
+import store from "@/store";
 
-let modalState = true
-let restrictedState = true
+let modalState = true;
+let restrictedState = true;
 
-export default {
+const http = {
+	// 全局默认配置
 	config: {
-		baseURL: setting.CURRENT_ENVIRONMENT,
+		baseURL: CURRENT_ENVIRONMENT,
 		header: {
-			'Content-Type': 'application/json;charset=UTF-8',
-			'Content-Type': 'application/x-www-form-urlencoded'
+			'Content-Type': 'application/json;charset=UTF-8'
 		},
 		custom: {
-			// 请求接口展示Loading
-			ShowLoading: false,
-			// Loading中是否遮罩
-			LoadingMask: true,
-			// Loading文本
-			LoadingText: setting.LOADING_TEXT,
+			ShowLoading: false, // 是否显示 Loading
+			LoadingMask: true, // Loading 是否遮罩
+			LoadingText: setting.LOADING_TEXT // Loading 文本
 		},
 		dataType: "json",
-		/* 如设为json，会对返回的数据做一次 JSON.parse */
 		responseType: "text",
-		// #ifdef H5 || APP-PLUS || MP-ALIPAY || MP-WEIXIN
 		timeout: setting.TIMEOUT,
-		// #endif
-		// #ifdef APP-PLUS
-		// 验证 ssl 证书 仅5+App安卓端支持（HBuilderX 2.3.3+）
 		sslVerify: false,
-		// #endif
-		// #ifdef H5
-		// 跨域请求时是否携带凭证（cookies）仅H5支持（HBuilderX 2.6.15+）
 		withCredentials: false,
-		// #endif
-		// #ifdef APP-PLUS
-		// DNS解析时优先使用ipv4 仅 App-Android 支持 (HBuilderX 2.8.0+)
-		firstIpv4: false,
-		// #endif
+		firstIpv4: false
 	},
-	get(url, data, options) {
-		if (!options) {
-			options = {}
-		}
-		options.url = url
-		options.data = data
-		options.method = 'GET'
-		options.header = {
-			'Content-Type': 'application/x-www-form-urlencoded'
-		}
-		return this.request(options)
+
+	/**
+	 * GET 请求
+	 */
+	get(url, data = {}, options = {}) {
+		return this.request({
+			...options,
+			url,
+			data,
+			method: 'GET',
+			header: {
+				'Content-Type': 'application/x-www-form-urlencoded'
+			}
+		});
 	},
-	post(url, data, options) {
-		if (!options) {
-			options = {}
-		}
-		options.url = url
-		options.data = data
-		options.method = 'POST'
-		options.header = {
-			'Content-Type': 'application/json;charset=UTF-8'
-		}
-		return this.request(options)
+
+	/**
+	 * POST 请求
+	 */
+	post(url, data = {}, options = {}) {
+		return this.request({
+			...options,
+			url,
+			data,
+			method: 'POST',
+			header: {
+				'Content-Type': 'application/json;charset=UTF-8'
+			}
+		});
 	},
-	request(options) {
-		//请求前处理，相当于请求拦截
-		let config = Object.assign(this.config, options); //合并全局配置及局部配置项
-		//加载提示
-		if (config.custom.ShowLoading && !options.url.includes('/api/user/heartbeat')) {
+
+	/**
+	 * 核心请求
+	 */
+	request(options = {}) {
+		const config = {
+			...this.config,
+			...options,
+			header: {
+				...this.config.header,
+				...options.header
+			}
+		};
+
+		// URL
+		config.url = config.baseURL + config.url;
+		config.data = config.data || {};
+
+		// token
+		const token = uni.getStorageSync('token') || '';
+		if (token) config.data.token = token;
+
+		// 时间戳
+		config.data.timestamp = Math.round(new Date() / 1000);
+
+		// 显示 Loading
+		if (config.custom.ShowLoading && !config.url.includes('/api/user/heartbeat')) {
 			uni.showLoading({
-				title: config.custom.LoadingText || 'loading',
-				mask: config.custom.LoadingMask || false
+				title: config.custom.LoadingText || '加载中...',
+				mask: config.custom.LoadingMask
 			});
 		}
-		config.url = config.baseURL + config.url
-		config.data = config.data || {}
 
-		//如果token不为空则请求时携带token
-		let _token = uni.getStorageSync('token') || ''
-		if (_token != '' && _token != undefined) {
-			config.data['token'] = _token
-		}
-		config.data['timestamp'] = Math.round(new Date() / 1000); //时间戳;
+		// 请求日志
+		if (setting.REQUEST_LOG) _reqlog(config);
 
-		// if (CURRENT_ENVIRONMENT == ENVIRONMENT.DEV) {
-		// 	delete config.data['geetest_captcha'];
-		// }
-		// if (options.url.includes('login')) {
-		// }
-
-
-		//是否开启请求日志
-		if (setting.REQUEST_LOG) {
-			_reqlog(config)
-		}
 		return new Promise((resolve, reject) => {
 			uni.request(config)
 				.then(res => {
-					if (config.custom?.ShowLoading) {
-						uni.hideLoading();
-					}
-
-					if (setting.REQUEST_LOG) {
-						_reslog(res);
-					}
+					if (config.custom.ShowLoading) uni.hideLoading();
+					if (setting.REQUEST_LOG) _reslog(res);
 
 					if (res.statusCode === 200) {
 						resolve(res.data);
@@ -120,25 +113,28 @@ export default {
 					}
 				})
 				.catch(err => {
-					if (config.custom?.ShowLoading) {
-						uni.hideLoading();
-					}
+					if (config.custom.ShowLoading) uni.hideLoading();
 					console.error('请求失败:', err);
 					reject(err);
 				});
 		});
+	}
+};
 
-	},
-}
 /**
- * 请求接口日志记录
+ * 请求日志
  */
-//请求日志
 function _reqlog(req) {
-	console.log("请求地址：" + req.url)
-	console.log("请求参数：" + JSON.stringify(req.data))
+	console.log(`\n🚀 [Request] ${req.method} ${req.url}`);
+	console.log(`📦 Params:`, req.data);
 }
-//响应日志
+
+/**
+ * 响应日志
+ */
 function _reslog(res) {
-	console.log("响应结果：" + JSON.stringify(res))
+	console.log(`\n✅ [Response] Status: ${res.statusCode}`);
+	console.log(`📦 Data:`, res.data);
 }
+
+export default http;
