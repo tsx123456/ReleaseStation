@@ -41,7 +41,7 @@
 				this.swiperHeight = screenWidth / aspectRatio + "px";
 			},
 			handleSwiperClick(index) {
-				const url = this.images[index].link;
+				const url = this.formattedImages[index]?.link;
 				if (url) {
 					uni.navigateTo({
 						url: "/pages/webview/webview?url=" + encodeURIComponent(url)
