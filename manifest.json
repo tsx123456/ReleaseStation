@@ -1,42 +1,44 @@
 {
-    "name" : "FCPG",
-    "appid" : "__UNI__2BD90B9",
-    "description" : "FCPG",
-    "versionName" : "1.0.0",
-    "versionCode" : "100",
-    "transformPx" : false,
-    "app-plus" : {
-        "nvueCompiler" : "uni-app",
-        "usingComponents" : true,
-        "webview" : {
-            "kernel" : "WKWebView",
-            "plusrequire" : "all",
-            "initTimeout" : 3000
+    "name": "FCPG",
+    "appid": "__UNI__2BD90B9",
+    "description": "FCPG",
+    "versionName": "1.0.1-dev",
+    "versionCode": "101",
+    "transformPx": false,
+    "app-plus": {
+        "nvueCompiler": "uni-app",
+        "usingComponents": true,
+        "webview": {
+            "kernel": "WKWebView",
+            "plusrequire": "all",
+            "initTimeout": 3000
         },
-        "useragent" : {
-            "value" : "DCloud-App/1.0.0"
+        "useragent": {
+            "value": "DCloud-App/1.0.1-dev"
         },
-        "securedomain" : {
-            "https" : [ "*" ]
+        "securedomain": {
+            "https": [
+                "*"
+            ]
         },
-        "nvueStyleCompiler" : "uni-app",
-        "compilerVersion" : 3,
-        "splashscreen" : {
-            "alwaysShowBeforeRender" : false,
-            "waiting" : false,
-            "autoclose" : false,
-            "delay" : 0
+        "nvueStyleCompiler": "uni-app",
+        "compilerVersion": 3,
+        "splashscreen": {
+            "alwaysShowBeforeRender": false,
+            "waiting": false,
+            "autoclose": false,
+            "delay": 0
         },
-        "modules" : {
-            "gallery" : {},
-            "Camera" : {}
+        "modules": {
+            "gallery": {},
+            "Camera": {}
         },
-        "distribute" : {
-            "android" : {
-                "name" : "FCPG",
-                "package" : "com.tsx.fcStation",
-                "fullscreen" : true,
-                "permissions" : [
+        "distribute": {
+            "android": {
+                "name": "FCPG",
+                "packagename": "uni.app.UNI2BD90B9",
+                "fullscreen": true,
+                "permissions": [
                     "<uses-permission android:name=\"android.permission.CHANGE_NETWORK_STATE\"/>",
                     "<uses-permission android:name=\"android.permission.MOUNT_UNMOUNT_FILESYSTEMS\"/>",
                     "<uses-permission android:name=\"android.permission.VIBRATE\"/>",
@@ -51,115 +53,116 @@
                     "<uses-permission android:name=\"android.permission.WAKE_LOCK\"/>",
                     "<uses-permission android:name=\"android.permission.FLASHLIGHT\"/>",
                     "<uses-feature android:name=\"android.hardware.camera\"/>",
-                    "<uses-permission android:name=\"android.permission.WRITE_SETTINGS\"/>"
+                    "<uses-permission android:name=\"android.permission.WRITE_SETTINGS\"/>",
+                    "<uses-permission android:name=\"android.permission.REQUEST_INSTALL_PACKAGES\"/>"
                 ]
             },
-            "ios" : {
-                "bundleIdentifier" : "com.tsx.fcStation",
-                "fullscreen" : true,
-                "dSYMs" : false,
-                "permissions" : {
-                    "PhotoLibrary" : {
-                        "description" : "Precisa acessar o álbum de fotos para salvar a imagem"
+            "ios": {
+                "bundleIdentifier": "com.tsx.fcStation",
+                "fullscreen": true,
+                "dSYMs": false,
+                "permissions": {
+                    "PhotoLibrary": {
+                        "description": "Precisa acessar o álbum de fotos para salvar a imagem"
                     }
                 },
-                "privacyDescription" : {
-                    "NSPhotoLibraryAddUsageDescription" : "O aplicativo precisa salvar o código QR no seu álbum de fotos"
+                "privacyDescription": {
+                    "NSPhotoLibraryAddUsageDescription": "O aplicativo precisa salvar o código QR no seu álbum de fotos"
                 }
             },
-            "sdkConfigs" : {},
-            "icons" : {
-                "android" : {
-                    "hdpi" : "static/launch/icons_android/app_icon_72x72.png",
-                    "xhdpi" : "static/launch/icons_android/app_icon_96x96.png",
-                    "xxhdpi" : "static/launch/icons_android/app_icon_144x144.png",
-                    "xxxhdpi" : "static/launch/icons_android/app_icon_192x192.png"
+            "sdkConfigs": {},
+            "icons": {
+                "android": {
+                    "hdpi": "static/launch/icons_android/app_icon_72x72.png",
+                    "xhdpi": "static/launch/icons_android/app_icon_96x96.png",
+                    "xxhdpi": "static/launch/icons_android/app_icon_144x144.png",
+                    "xxxhdpi": "static/launch/icons_android/app_icon_192x192.png"
                 },
-                "ios" : {
-                    "appstore" : "static/launch/icons_android/app_icon_1024x1024.png",
-                    "ipad" : {
-                        "app" : "static/launch/icons_ipad/ipad_icon_iPadApp@1x_76x76.png",
-                        "app@2x" : "static/launch/icons_ipad/ipad_icon_iPadApp@2x_152x152.png",
-                        "notification" : "static/launch/icons_ipad/ipad_icon_iPadNotification@1x_20x20.png",
-                        "notification@2x" : "static/launch/icons_ipad/ipad_icon_iPadNotification@2x_40x40.png",
-                        "proapp@2x" : "static/launch/icons_ipad/ipad_icon_iPadProApp@2x_167x167.png",
-                        "settings" : "static/launch/icons_ipad/ipad_icon_iPadSettings@1x_29x29.png",
-                        "settings@2x" : "static/launch/icons_ipad/ipad_icon_iPadSettings@2x_58x58.png",
-                        "spotlight" : "static/launch/icons_ipad/ipad_icon_iPadSpotlight@1x_40x40.png",
-                        "spotlight@2x" : "static/launch/icons_ipad/ipad_icon_iPadSpotlight@2x_80x80.png"
+                "ios": {
+                    "appstore": "static/launch/icons_android/app_icon_1024x1024.png",
+                    "ipad": {
+                        "app": "static/launch/icons_ipad/ipad_icon_iPadApp@1x_76x76.png",
+                        "app@2x": "static/launch/icons_ipad/ipad_icon_iPadApp@2x_152x152.png",
+                        "notification": "static/launch/icons_ipad/ipad_icon_iPadNotification@1x_20x20.png",
+                        "notification@2x": "static/launch/icons_ipad/ipad_icon_iPadNotification@2x_40x40.png",
+                        "proapp@2x": "static/launch/icons_ipad/ipad_icon_iPadProApp@2x_167x167.png",
+                        "settings": "static/launch/icons_ipad/ipad_icon_iPadSettings@1x_29x29.png",
+                        "settings@2x": "static/launch/icons_ipad/ipad_icon_iPadSettings@2x_58x58.png",
+                        "spotlight": "static/launch/icons_ipad/ipad_icon_iPadSpotlight@1x_40x40.png",
+                        "spotlight@2x": "static/launch/icons_ipad/ipad_icon_iPadSpotlight@2x_80x80.png"
                     },
-                    "iphone" : {
-                        "app@2x" : "static/launch/icon_ios/ios_icon_App@2x_120x120.png",
-                        "app@3x" : "static/launch/icon_ios/ios_icon_App@3x_180x180.png",
-                        "notification@2x" : "static/launch/icon_ios/ios_icon_Notification@2x_40x40.png",
-                        "notification@3x" : "static/launch/icon_ios/ios_icon_Notification@3x_60x60.png",
-                        "settings@2x" : "static/launch/icon_ios/ios_icon_Settings@2x_58x58.png",
-                        "settings@3x" : "static/launch/icon_ios/ios_icon_Settings@3x_87x87.png",
-                        "spotlight@2x" : "static/launch/icon_ios/ios_icon_Spotlight@2x_80x80.png",
-                        "spotlight@3x" : "static/launch/icon_ios/ios_icon_Spotlight@3x_120x120.png"
+                    "iphone": {
+                        "app@2x": "static/launch/icon_ios/ios_icon_App@2x_120x120.png",
+                        "app@3x": "static/launch/icon_ios/ios_icon_App@3x_180x180.png",
+                        "notification@2x": "static/launch/icon_ios/ios_icon_Notification@2x_40x40.png",
+                        "notification@3x": "static/launch/icon_ios/ios_icon_Notification@3x_60x60.png",
+                        "settings@2x": "static/launch/icon_ios/ios_icon_Settings@2x_58x58.png",
+                        "settings@3x": "static/launch/icon_ios/ios_icon_Settings@3x_87x87.png",
+                        "spotlight@2x": "static/launch/icon_ios/ios_icon_Spotlight@2x_80x80.png",
+                        "spotlight@3x": "static/launch/icon_ios/ios_icon_Spotlight@3x_120x120.png"
                     }
                 }
             },
-            "splashscreen" : {
-                "androidStyle" : "default",
-                "android" : {
-                    "hdpi" : "static/launch/splash/splash.png",
-                    "xhdpi" : "static/launch/splash/splash.png",
-                    "xxhdpi" : "static/launch/splash/splash.png"
+            "splashscreen": {
+                "androidStyle": "default",
+                "android": {
+                    "hdpi": "static/launch/splash/splash.png",
+                    "xhdpi": "static/launch/splash/splash.png",
+                    "xxhdpi": "static/launch/splash/splash.png"
                 },
-                "iosStyle" : "storyboard",
-                "ios" : {
-                    "iphone" : {
-                        "portrait-896h@3x" : "unpackage/res/splash_ios/iPhone_XSMax_11ProMax_1242x2688.png",
-                        "portrait-896h@2x" : "unpackage/res/splash_ios/iPhone_XR_11_828x1792.png",
-                        "iphonex" : "unpackage/res/splash_ios/iPhone_X_XS_11Pro_1125x2436.png",
-                        "retina55" : "unpackage/res/splash_ios/iPhone_6P_6SP_7P_8P_1242x2208.png",
-                        "retina47" : "unpackage/res/splash_ios/iPhone_6_6S_7_8_750x1334.png",
-                        "retina40" : "unpackage/res/splash_ios/iPhone_5_5S_SE_640x1136.png",
-                        "landscape-896h@3x" : "unpackage/res/splash_ios/iPhone_XSMax_Landscape_2688x1242.png",
-                        "landscape-896h@2x" : "unpackage/res/splash_ios/iPhone_XR_Landscape_1792x828.png",
-                        "iphonexl" : "unpackage/res/splash_ios/iPhone_X_XS_Landscape_2436x1125.png",
-                        "retina55l" : "unpackage/res/splash_ios/iPhone_6P_6SP_7P_8P_Landscape_2208x1242.png",
-                        "retina47l" : "unpackage/res/splash_ios/iPhone_6_6S_7_8_Landscape_1334x750.png",
-                        "retina40l" : "unpackage/res/splash_ios/iPhone_5_5S_SE_Landscape_1136x640.png",
-                        "retina35" : "unpackage/res/splash_ios/iPhone_4_4S_640x960.png"
+                "iosStyle": "storyboard",
+                "ios": {
+                    "iphone": {
+                        "portrait-896h@3x": "unpackage/res/splash_ios/iPhone_XSMax_11ProMax_1242x2688.png",
+                        "portrait-896h@2x": "unpackage/res/splash_ios/iPhone_XR_11_828x1792.png",
+                        "iphonex": "unpackage/res/splash_ios/iPhone_X_XS_11Pro_1125x2436.png",
+                        "retina55": "unpackage/res/splash_ios/iPhone_6P_6SP_7P_8P_1242x2208.png",
+                        "retina47": "unpackage/res/splash_ios/iPhone_6_6S_7_8_750x1334.png",
+                        "retina40": "unpackage/res/splash_ios/iPhone_5_5S_SE_640x1136.png",
+                        "landscape-896h@3x": "unpackage/res/splash_ios/iPhone_XSMax_Landscape_2688x1242.png",
+                        "landscape-896h@2x": "unpackage/res/splash_ios/iPhone_XR_Landscape_1792x828.png",
+                        "iphonexl": "unpackage/res/splash_ios/iPhone_X_XS_Landscape_2436x1125.png",
+                        "retina55l": "unpackage/res/splash_ios/iPhone_6P_6SP_7P_8P_Landscape_2208x1242.png",
+                        "retina47l": "unpackage/res/splash_ios/iPhone_6_6S_7_8_Landscape_1334x750.png",
+                        "retina40l": "unpackage/res/splash_ios/iPhone_5_5S_SE_Landscape_1136x640.png",
+                        "retina35": "unpackage/res/splash_ios/iPhone_4_4S_640x960.png"
                     },
-                    "ipad" : {
-                        "portrait-1194h@2x" : "unpackage/res/splash_ios/iPad_11_Pro_1668x2388.png",
-                        "portrait-1112h@2x" : "unpackage/res/splash_ios/iPad_10.5_1668x2224.png",
-                        "portrait-1366h@2x" : "unpackage/res/splash_ios/iPad_12.9_Pro_2048x2732.png",
-                        "portrait-retina7" : "unpackage/res/splash_ios/iPad_Mini_Air_1536x2048.png"
+                    "ipad": {
+                        "portrait-1194h@2x": "unpackage/res/splash_ios/iPad_11_Pro_1668x2388.png",
+                        "portrait-1112h@2x": "unpackage/res/splash_ios/iPad_10.5_1668x2224.png",
+                        "portrait-1366h@2x": "unpackage/res/splash_ios/iPad_12.9_Pro_2048x2732.png",
+                        "portrait-retina7": "unpackage/res/splash_ios/iPad_Mini_Air_1536x2048.png"
                     },
-                    "storyboard" : "resources/Storyboard.zip"
+                    "storyboard": "resources/Storyboard.zip"
                 }
             }
         }
     },
-    "quickapp" : {},
-    "mp-weixin" : {
-        "appid" : "",
-        "setting" : {
-            "urlCheck" : false
+    "quickapp": {},
+    "mp-weixin": {
+        "appid": "",
+        "setting": {
+            "urlCheck": false
         },
-        "usingComponents" : true
+        "usingComponents": true
     },
-    "mp-alipay" : {
-        "usingComponents" : true
+    "mp-alipay": {
+        "usingComponents": true
     },
-    "mp-baidu" : {
-        "usingComponents" : true
+    "mp-baidu": {
+        "usingComponents": true
     },
-    "mp-toutiao" : {
-        "usingComponents" : true
+    "mp-toutiao": {
+        "usingComponents": true
     },
-    "uniStatistics" : {
-        "enable" : false
+    "uniStatistics": {
+        "enable": false
     },
-    "vueVersion" : "2",
-    "devDependencies" : {
-        "@dcloudio/vue-cli-plugin-uni" : "^2.0.2-4060620250520001"
+    "vueVersion": "2",
+    "devDependencies": {
+        "@dcloudio/vue-cli-plugin-uni": "^2.0.2-4060620250520001"
     },
-    "h5" : {
-        "title" : "FCPG"
+    "h5": {
+        "title": "FCPG"
     }
 }

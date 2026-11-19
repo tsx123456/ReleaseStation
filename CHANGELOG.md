@@ -1,0 +1,139 @@
+# 项目修改记录
+
+记录从本文件创建之日起的项目修改；按时间倒序追加，保留历史记录。每条记录包含目的、主要改动及实际验证情况，不包含密钥或用户隐私信息。
+
+## 2026-11-19 — 优化 App 更新界面与下载反馈
+
+- 真机确认 1.0.1（101）更新后安装版本为 1.0.2（102）。针对原生默认弹窗缺少品牌视觉和可见进度的问题，新增 `component/AppUpdateDialog.vue`，使用深色金色面板、更新说明、下载百分比和进度条，并保留可选更新稍后提醒、强制更新及失败重试。
+- `App.vue` 缓存更新信息并通知首页组件展示，`pages/index.vue` 仅在 App 端渲染面板；葡语和英语增加下载提示。
+- 执行 `node scripts/buildUni.js app-plus` 和 `node scripts/buildUni.js h5`，均退出 0，输出到独立 unpackage 检查目录；构建中存在沙箱访问用户目录及缓存 EPERM 提示，仍报告编译完成，另有既有导出和资源体积警告。新界面尚未云打包，也尚未在真机验证进度、失败和强制更新交互；测试环境未部署此 UI。
+
+## 2026-11-19 — 修正外测包下载路径
+
+- 真机安装 1.0.1（101）后成功显示 1.0.2 可选更新提示；用户点击更新时报告 HTTP 400。
+- 手机对测试服务器的 `/uploads/` 请求返回 404，而 `/api/uploads/` 的范围请求返回 206。暂停外测版本记录，将下载路径改为 `api/uploads/` 并重新发布；手机请求版本接口确认返回修正后的路径。
+- 修正后完整下载和覆盖安装仍待真机复测；此为测试环境版本记录调整，后续上传时路径生成仍需修复及验证。
+
+## 2026-11-19 — 发布 Android 外测更新版本
+
+- 外测后台登记六个版本管理接口，并为普通用户角色 888 授权；重新打开角色配置确认权限已保存。
+- 上传签名版 1.0.2（版本号 102）APK，创建并发布 official 渠道的可选更新，记录文件大小和 SHA-256。版本 1.0.1（101）仍在本机。
+- 浏览器访问外测更新接口：版本 101 返回 optional 和 102 版本信息；版本 102 返回 none。安装包下载路径尚未验证，命令行访问外测静态路径连接被重置；暂无安卓设备，弹窗、下载及覆盖安装尚未验证，自动打包上传也未完成配置。
+
+## 2026-11-19 — 验证外测发布入口与升级包
+
+- 外测管理后台可登录并显示“安装包管理 → 版本发布”，但当前账号请求版本管理接口时显示“权限不足”，需管理员为测试角色登记并授权新接口后才能联调。
+- 为验证更新提示，额外制作版本 102 的 Android 外测 APK；使用 `aapt2`、`apksigner` 和包内资源检查确认包名、版本、旧版一致的证书指纹及外测接口配置。版本 101 和 102 目前仅保存在本机，均未上传或发布；暂无测试手机，安装及弹窗未验证。
+- 构建完成后源码环境和版本信息已恢复原值；101 包的 Android manifest 启用明文 HTTP，外测地址仍需在真实设备上确认可访问。
+
+## 2026-11-18 — 管理后台外测部署及 Android 外测包
+
+- 管理后台前端提交 `f569273`；Jenkins #12 因 npm 上原 SVG 插件版本不可用而失败。将本机已有 1.6.0 插件作为本地依赖固定（提交 `0cd84e1`），全新依赖安装和测试构建成功，Jenkins #13 拉取该提交、上传 1 个文件并显示 `SUCCESS`；外测站点的新版安装包管理脚本返回 HTTP 200。实际页面与角色权限仍待登录验证。
+- 使用 HBuilderX 云打包生成 `FCPG-external-test-1.0.1-101.apk`，构建时临时选择外测环境，完成资源编译后恢复源码环境选择。实际 APK 的包名为 `uni.app.UNI2BD90B9`，版本号 101，包含外测接口与版本检查路径；签名证书 SHA-256 与两份历史 APK 相同。
+- APK 当前仅保存在本地，尚未上传版本中心或在设备上验证覆盖安装、提示和下载安装；`adb devices` 当前未发现已连接设备，管理后台登录及版本发布接口权限仍待确认。测试接口为 HTTP，实际设备访问及下载需继续核验。
+
+## 2026-11-18 — 同步并部署 H5 测试产物
+
+- 使用 HBuilderX 的 H5 发行生成测试网页，构建时选择 `DEV_OUTSIDE`（`http://52.67.128.45:2009`），随后将源码的环境选择恢复原值；原先本地构建输出已备份。
+- 在网页产物仓库以 `master` 为基线生成测试产物并推送 `test`，提交为 `e87be40`；该提交在 master 基线上额外包含测试产物，未修改 master。原仓库工作区未切换分支。
+- 本地预览可显示平台列表；Jenkins `fcpgweb_test` 第 9 次构建拉取提交 `e87be40`，部署到 `52.67.128.45:/home/wwwroot/fcpgweb` 并返回 `SUCCESS`。尚未验证外部测试网址上的页面。
+- 管理前端测试构建首次因本机内存不足失败；项目方关闭暂时不用的 VS Code 后重新构建成功，仍有产物体积提示。Go 后端相关包编译通过但无测试文件。App 安装包签名及真机更新闭环仍待验证，此次 H5 发布不等同于 App 更新功能验收。
+- 后续：后端 `develop` 合并到后端 `test` 并推送，测试分支最新提交 `a6226af`；Jenkins `测试-游戏聚合后台` 的 #22 构建被自动触发。浏览器连接中断，尚未核实其最终状态及检出的提交；测试地址的 `/api/app/version/check` 对包名 `uni.app.UNI2BD90B9`、版本号 100 返回 HTTP 200 和 `result=none`。管理前端尚未推送或部署。
+
+## 2026-11-18 — 记录测试分支与 H5 部署流程
+
+- 目的：按项目方提供的实际流程，记录各项目在验证后提交测试分支并通过 Jenkins 部署的约定。
+- 改动：在 `AGENTS.md` 和 `PROJECT_ANALYSIS.md` 记录 HBuilderX 网页产物仓库、`fcpgweb_test` 任务以及后端和管理端独立测试分支；强调原生安装包与 H5 资源的区别。
+- 验证：核对 `WebGameAggregation_client` 远程 `test` 分支和 `fcpgWeb` 目录，Jenkins `fcpgweb_test` 历史构建使用该仓库；后端和管理前端历史任务分别使用对应仓库的 `test` 分支。
+- 当时核对：项目方确认测试接口为 `http://52.67.128.45:2009`，并要求先同步网页产物仓库的 `master` 与 `test`。检查发现 `master` 的 H5 产物实际使用正式后台地址，项目方因此选择先制作测试产物。初次尝试时 HBuilderX 窗口权限较高；后续完成产物生成和部署，详见上条记录。
+
+## 2026-11-17 — 完整对齐 HBuilderX App-Plus 编译依赖
+
+- 原因：仅补充共享包后，真正把 `UNI_PLATFORM=app-plus` 打开会继续暴露旧版 `vue-cli-plugin-uni` 缺少 `@dcloudio/webpack-uni-mp-loader` 的问题；原 `scripts/buildUni.js` 也没有设置 `UNI_PLATFORM` 和生产模式，之前的 `build:app-plus` 退出 0 实际走的是默认 H5 开发构建。
+- 改动：将 DCloud uni-app 编译相关包统一到 HBuilderX 5.07 内置的 `2.0.2-alpha-5000120260205002` 版本族，补充 `@dcloudio/webpack-uni-mp-loader`；`scripts/buildUni.js` 现在明确设置平台、生产模式，并可从 `HBUILDERX_CLI`/`UNI_HBUILDERX_PLUGINS` 传入 HBuilderX 插件目录。App-Plus 构建输出保留在 `dist/build/app-plus`，不再把它误称为 APK。
+- 验证：执行干净的 `npm ci --legacy-peer-deps --ignore-scripts` 后，设置 HBuilderX CLI 路径运行 `npm run build:app-plus` 退出码 0；`npm run build:h5` 退出码 0。App-Plus 日志不再出现 `recyclableRender`、`lib/style` 或 `webpack-uni-mp-loader` 错误。
+- 未完成：仍有 `suporteGetdetailed` 导出缺失及资源体积提示等非阻断警告；源码编译不会生成签名 APK，HBuilderX 云打包的签名、账号和版本中心发布仍待完成。
+
+## 2026-11-17 — 修复 uni-app 编译链并澄清 APK 产物边界
+
+- 原因：HBuilderX/uni-app 的模板加载器会导出 `recyclableRender`，但项目未加载 HBuilderX 专用插件，且 `@dcloudio/uni-cli-shared` 版本缺少 `lib/style`，导致 `recyclableRender` 和样式模块错误；原 `build:app-plus` 还会从旧的 `unpackage` 目录误取 APK 并重命名，容易把历史包误判为本次构建产物。
+- 改动：在 `package.json`/`package-lock.json` 增加并锁定 `@dcloudio/vue-cli-plugin-hbuilderx@2.0.2-alpha-5000120260205002`，将 `@dcloudio/uni-cli-shared` 对齐到同版本；`build:app-plus` 只执行 App-Plus 资源编译，`renameApk.js` 改为必须显式传入 APK 路径，避免重命名旧包。
+- 验证：按 CI 方式执行 `npm ci --legacy-peer-deps --ignore-scripts` 后，`npm run build:h5` 和 `npm run build:app-plus` 均退出码 0，已不再出现 `recyclableRender` 或 `@dcloudio/uni-cli-shared/lib/style` 错误；仍有 `suporteGetdetailed` 导出缺失、Browserslist/PostCSS 提示等非阻断警告。上述命令只证明源码编译通过，不代表 HBuilderX 云打包已生成签名 APK。
+- 未完成：HBuilderX 云打包仍需可用签名库及密码；还没有版本 101 的新 APK、开发版本中心发布记录和连接的 Android 设备，因此覆盖安装/下载安装闭环尚未完成。
+
+## 2026-11-17 — 确认 Android 正式包名
+
+- 结论：项目方确认 Android 包名为 `uni.app.UNI2BD90B9`；`com.tsx.fcStation` 是早期自行填写的 Android 包名值，不作为当前 Android 覆盖安装标识。当前代码、后台默认值和 CI 配置均继续使用 `uni.app.UNI2BD90B9`。
+- 影响范围：`com.tsx.fcStation` 在 `manifest.json` 中仍作为 iOS `bundleIdentifier` 保留，未将 Android 与 iOS 标识混用。
+- 待确认：Android 更新仍必须使用与历史安装包一致的签名证书；包名已确认不等于签名覆盖安装已验证。
+
+## 2026-11-17 — 完成更新功能发布前验收并记录阻塞项
+
+- 目的：确认版本检查、后台发布、HBuilderX 原生构建和设备安装是否已经形成可交付的完整更新闭环。
+- 验证：Go 后端目标包测试通过；管理后台 `npm run build` 通过；本地开发服务的 `/api/app/version/check` 在无发布记录时返回 `200/result=none` 且禁止缓存；本地历史 APK 静态下载路由返回 `200`；App H5 诊断构建和 HBuilderX App-Plus 编译均仍被项目现有 uni-app 编译器的 `recyclableRender`/样式模块错误阻塞。HBuilderX 云打包另需签名库密码，当前未产出新 APK；ADB 当前没有已连接设备（虽然本机存在未启动的 Pixel_5_API_30 AVD），因此未完成覆盖安装验证。同步让 CI 云打包显式传入历史包名，避免流水线依赖本地默认值。
+- 结论：更新业务代码已具备主要功能，但尚不能宣称“完整验证通过”。正式验收还需要部署开发版本中心、配置与线上旧包一致的 Android 包名/签名和 CI 凭据、产出版本 101 APK，并连接真实设备完成可选/强制更新、下载失败重试、权限拒绝和覆盖安装后的版本复核。
+
+## 2026-11-17 — 对齐 HBuilderX 包名与历史 APK
+
+- 目的：确保首个更新包能够覆盖当前已运营/测试用户安装的 Android 包。
+- 改动：将 `manifest.json` 的 Android 云打包字段从无效的 `package` 修正为 `packagename`；按项目方确认使用 `uni.app.UNI2BD90B9`；运行时优先读取 `uni.getAppBaseInfo().packageName`；同步 CI 发布脚本和流水线默认包名。
+- 验证：使用 Android SDK `aapt` 核对现有 APK 的实际包名为 `uni.app.UNI2BD90B9`；后续只需继续核对签名指纹和覆盖安装结果。
+
+## 2026-11-17 — 修正安装包相对地址解析
+
+- 目的：保证版本中心通过本地 OSS 返回 `uploads/file/...` 时，App 点击更新能够访问后端静态文件路由。
+- 改动：`common/appUpdate.js` 保留 `uploads/` 相对地址为 `${base}/uploads/...`；只有普通业务相对地址才补充 `/api/`，避免错误生成 `/api/uploads/...`。
+- 验证：开发后端实际测试 `/uploads/file/...` 返回 200，而 `/api/uploads/file/...` 返回 404；修正后客户端解析路径与后端静态路由一致。
+
+## 2026-11-17 — 校正 HBuilderX 正式发行路径
+
+- 目的：根据实际 HBuilderX 项目和发行菜单，明确 H5 网页发布与 Android/iOS 原生云打包的边界，避免把 npm CLI 诊断构建误当成正式发行。
+- 改动：更新 `APP_UPDATE_PLAN.md` 与 `PROJECT_ANALYSIS.md`：`发行 → 网站-PC Web或手机H5` 作为 `fcpg.app` 网页资源发布入口；`发行 → App-Android/iOS-云打包` 作为版本中心接收的原生安装包入口；CI 继续使用等价的 HBuilderX CLI 云打包，不改变正式环境配置。
+- 验证：已通过 HBuilderX 5.07 当前窗口确认 `sji001` 的 `develop` 项目处于打开状态；未启动云打包、未上传安装包。
+
+## 2026-11-17 — 接入 App 版本检查与下载安装协调器
+
+- 目的：让新版本 App 能在启动或回前台时查询版本，并按后台返回的可选/强制策略下载 Android 安装包。
+- 改动：新增 `common/appUpdate.js`；在 `App.vue` 增加 App-Plus 版本检查、系统更新弹窗、下载进度、安装发起和失败重试；补充 App 更新多语言文案、开发版本检查基址和 Android 安装权限；新增 `scripts/setAppVersion.js`、`scripts/publishRelease.js` 及受开关保护的 `.github/workflows/app-release.yml`。遵循 uni-app 约束，未在 `App.vue` 添加模板。
+- 验证：已静态检查版本请求不复用登录 token，后端两个开发检查路径均可用；脚本通过 `node --check`；尚未在真实设备完成签名覆盖安装、权限确认、HBuilderX 云打包和 CI 上传。
+
+## 2026-11-17 — 细化 App 更新下载安装落地方案
+
+- 目的：基于当前 App 与 Go 后端源码，规划可实施的版本检查、可选/强制更新、Android 下载安装、老版本迁移和后台发布流程。
+- 改动：补充 `APP_UPDATE_PLAN.md` 的项目基线、现有接口限制、独立版本发布模型、公开检查接口、Android 安装链路、Google Play/iOS/H5 渠道边界、桥接版本迁移路径、分阶段实施顺序和验收清单；未修改业务代码及数据库。
+- 验证：静态核对 `manifest.json`、`App.vue`、`pages/share/share.vue`、`common/uni.interface.js` 以及 Go 后端 `bus_packageManager`、路由、服务和响应模型；参考 DCloud/Android 官方文档；未执行构建、未在真机安装验证、未创建数据库表或接口。
+
+## 2026-11-17 — 启动正确的 FCPG 后台前端
+
+- 原因：之前启动的管理前端项目不包含 FCPG 业务页面，导致菜单内容空白。
+- 操作：获取配套的 `WebAggregationPlatform_Sever_Client` 源码，使用独立临时依赖和配置在本机启动开发服务，并连接既有测试后端。
+- 验证：平台列表及安装包管理组件请求、后端代理健康检查均返回 HTTP 200；用户登录后确认平台列表显示数据（共 34 条）。安装包管理业务尚未验证。项目依赖使用本机已有的旧版 SVG 插件，临时依赖目录不可作为正式构建依据。
+
+## 2026-11-17 — 排查后台管理内容空白
+
+- 发现：当前启动的管理前端缺少测试库菜单指向的 `view/fcpg/` 页面，导致业务菜单内容空白；之前仅看到平台列表标签，未确认业务内容，前一条验证结论需要更正。
+- 验证：本地代理健康检查正常，以只读方式核对测试库菜单配置及本地前端各现有分支；尚未找到对应管理前端源码，未修改后台代码或菜单数据。
+
+## 2026-11-17 — 修复后台开发页持续加载
+
+- 原因：临时 Vite 配置中的源码别名指向跨盘临时路径，导致图标模块导入失败。
+- 操作：修正临时配置的源码路径，未修改后台前端源码。
+- 验证：图标注册模块返回 HTTP 200，右侧页面已显示后台平台列表界面。
+
+## 2026-11-17 — 启动后台本地调试环境
+
+- 目的：连接用户确认的开发测试数据库，运行后台前后端进行调试。
+- 操作：启动本地 Go 后端和管理前端开发服务；后端按现有启动逻辑执行测试库表结构自动迁移，具体表结构变化未逐项核对。管理前端使用临时配置代理到本地后端。
+- 验证：后端健康检查、前端代理健康检查及后端 Swagger 页面均返回 HTTP 200；未登录后台或验证具体业务数据。
+
+## 2026-11-17 — 整理 App 版本更新方案
+
+- 目的：规划强制更新和可选更新，为后续前后端对接做准备。
+- 改动：新增 `APP_UPDATE_PLAN.md`，涵盖平台渠道、版本策略、接口草案、发布和验收流程。
+- 验证：静态检查现有应用配置、启动和下载相关代码，并参考平台官方文档；尚未检查后端、执行构建或在真机验证。
+
+## 2026-11-17 — 建立项目协作规范与修改记录
+
+- 目的：梳理项目结构，建立后续 AI 协作和持续记录修改的约定。
+- 改动：新增 `AGENTS.md`、`PROJECT_ANALYSIS.md` 和本文件，说明项目结构、操作注意事项与日志维护方式。
+- 验证：静态检查项目目录、入口、页面配置、部分 API 和请求封装、构建脚本及 Git 状态；未执行构建、运行应用或验证接口。

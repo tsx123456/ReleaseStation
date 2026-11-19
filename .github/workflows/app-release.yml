@@ -1,0 +1,57 @@
+name: FCPG Android App Release
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+jobs:
+  package-and-publish:
+    # Enable only after the self-hosted runner, HBuilderX login, signing/cloud
+    # packaging and development upload endpoint have been configured.
+    if: ${{ vars.FCPG_RELEASE_ENABLED == 'true' }}
+    runs-on: [self-hosted, Windows, hbuilderx]
+    permissions:
+      contents: read
+    env:
+      HBUILDERX_CLI: ${{ vars.HBUILDERX_CLI }}
+      VUE_APP_UPDATE_BASE_URL: ${{ vars.FCPG_APP_UPDATE_BASE_URL }}
+      APP_RELEASE_API_URL: ${{ secrets.FCPG_APP_RELEASE_API_URL }}
+      APP_RELEASE_TOKEN: ${{ secrets.FCPG_APP_RELEASE_TOKEN }}
+      APP_PACKAGE_ID: uni.app.UNI2BD90B9
+      APP_CHANNEL: official
+      APP_UPDATE_MODE: optional
+      APP_PUBLISH: true
+
+    steps:
+      - name: Checkout develop
+        uses: actions/checkout@v4
+
+      - name: Prepare version
+        shell: pwsh
+        run: node scripts/setAppVersion.js
+
+      - name: Install JavaScript dependencies
+        shell: pwsh
+        run: npm ci --legacy-peer-deps
+
+      - name: Build signed Android APK with HBuilderX CLI
+        shell: pwsh
+        run: |
+          if (-not $env:HBUILDERX_CLI) { throw 'Repository variable HBUILDERX_CLI is not configured' }
+          & $env:HBUILDERX_CLI ver
+          if ($LASTEXITCODE -ne 0) { throw 'HBuilderX CLI is unavailable' }
+          & $env:HBUILDERX_CLI pack --project "$env:GITHUB_WORKSPACE" --platform android --safemode false --android.packagename "$env:APP_PACKAGE_ID"
+          if ($LASTEXITCODE -ne 0) { throw 'HBuilderX Android cloud packaging failed' }
+
+      - name: Upload APK and publish release
+        shell: pwsh
+        run: |
+          if (-not $env:APP_RELEASE_API_URL -or -not $env:APP_RELEASE_TOKEN) { throw 'Release API secrets are not configured' }
+          if ($env:APP_RELEASE_API_URL -match 'admin\.fcpg\.app') { throw 'develop workflow refuses to publish to the formal admin domain' }
+          $apk = Get-ChildItem -LiteralPath "$env:GITHUB_WORKSPACE\unpackage" -Filter *.apk -Recurse -File |
+            Where-Object { $_.FullName -notmatch '\\debug\\' } |
+            Sort-Object LastWriteTime -Descending |
+            Select-Object -First 1
+          if (-not $apk) { throw 'HBuilderX did not produce an APK under unpackage' }
+          node scripts/publishRelease.js $apk.FullName
