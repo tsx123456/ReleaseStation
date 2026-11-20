@@ -36,6 +36,7 @@
 - `packageManager.vue` 旁增加版本发布页，后台前端通过 `src/api/appRelease.js` 调用版本草稿、发布、暂停/恢复和删除接口；旧安装包管理页继续保留。
 - Go 后端新增 `bus_app_releases` 版本表、公开检查路由 `/app/version/check`（开发配置同时提供 `/api/app/version/check` 别名）和管理 CRUD/发布接口。旧 `bus_packageManager` 与客户端下载接口未删除，用于旧版本桥接。
 - `.github/workflows/app-release.yml` 仅监听 `test`（忽略纯 Markdown 推送），且需显式启用；使用 Windows 自托管 HBuilderX Runner 构建外测 APK，严格校验本次云包的来源、包名、版本和签名后上传草稿。运行需配置 CLI、Android 工具、受信云下载主机、签名和外测上传令牌；自动发布仍未启用，外测下载地址前缀需核对。该流程尚未真实运行验证。
+- 由于 `uni_modules` 未纳入 Git，外测 Runner 从指定的受控目录复制并比对仓库中固定的依赖摘要，变化时停止构建；依赖更新需审查并同步快照摘要。
 
 ## 当前验证状态
 

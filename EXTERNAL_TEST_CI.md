@@ -5,7 +5,8 @@
 ## Runner 和仓库配置
 
 - 准备有 `self-hosted`、`Windows`、`hbuilderx` 标签的专用 Windows Runner，安装 Node.js 18+、Java、HBuilderX 并登录有云打包权限的账号。Runner 必须能够访问外测后端和受信的云下载主机，并能读取项目需要的构建依赖。
-- 仓库变量：`FCPG_TEST_RELEASE_ENABLED`（验证前不设置为 `true`）、`HBUILDERX_CLI`、`FCPG_ANDROID_AAPT`、`FCPG_ANDROID_APKSIGNER_JAR`、`FCPG_HBUILDER_DOWNLOAD_HOST`、`FCPG_TEST_CERT_FILE`、`FCPG_TEST_CERT_ALIAS`。下载主机须由项目方根据真实云打包链接和重定向核实；仅允许该 HTTPS 主机，不记录链接。
+- 仓库变量：`FCPG_TEST_RELEASE_ENABLED`（验证前不设置为 `true`）、`HBUILDERX_CLI`、`FCPG_ANDROID_AAPT`、`FCPG_ANDROID_APKSIGNER_JAR`、`FCPG_HBUILDER_DOWNLOAD_HOST`、`FCPG_TEST_CERT_FILE`、`FCPG_TEST_CERT_ALIAS`、`FCPG_UNI_MODULES_SOURCE`。下载主机须由项目方根据真实云打包链接和重定向核实；仅允许该 HTTPS 主机，不记录链接。
+- Git 忽略 `uni_modules`。Runner 从 `FCPG_UNI_MODULES_SOURCE` 复制依赖至干净检出目录，并核对仓库中的 `scripts/uni-modules.sha256`；源目录变化将停止构建。依赖升级时应先审查来源和改动，再更新摘要与该快照。
 - 仓库密钥：`FCPG_TEST_CERT_PASSWORD`、`FCPG_TEST_STORE_PASSWORD`、`FCPG_TEST_RELEASE_TOKEN`。外测 Go 服务还须在部署环境中配置对应的 `FCPG_APP_RELEASE_UPLOAD_TOKEN`；不要把令牌或证书密码写入仓库。
 - 外测接口和版本查询固定为 `http://52.67.128.45:2009`。外测接口使用 HTTP，令牌应只在可信网络中传输；要用于持续自动化，应先为测试服务配置受信 HTTPS 和访问限制。
 
