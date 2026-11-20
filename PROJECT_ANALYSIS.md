@@ -35,7 +35,7 @@
 - `manifest.json` 为直发 Android 包增加了 `REQUEST_INSTALL_PACKAGES` 权限；此权限只适用于允许直接分发 APK 的渠道，Google Play 渠道仍应使用商店更新。
 - `packageManager.vue` 旁增加版本发布页，后台前端通过 `src/api/appRelease.js` 调用版本草稿、发布、暂停/恢复和删除接口；旧安装包管理页继续保留。
 - Go 后端新增 `bus_app_releases` 版本表、公开检查路由 `/app/version/check`（开发配置同时提供 `/api/app/version/check` 别名）和管理 CRUD/发布接口。旧 `bus_packageManager` 与客户端下载接口未删除，用于旧版本桥接。
-- `.github/workflows/app-release.yml` 监听 `develop`，在启用仓库变量后使用 Windows 自托管 HBuilderX CLI Runner 打正式 APK；`scripts/setAppVersion.js` 准备递增版本号，`scripts/publishRelease.js` 调用后端 CI 上传接口。未配置 Runner、DCloud 登录态、签名和令牌时，流水线保持跳过。
+- `.github/workflows/app-release.yml` 仅监听 `test`（忽略纯 Markdown 推送），且需显式启用；使用 Windows 自托管 HBuilderX Runner 构建外测 APK，严格校验本次云包的来源、包名、版本和签名后上传草稿。运行需配置 CLI、Android 工具、受信云下载主机、签名和外测上传令牌；自动发布仍未启用，外测下载地址前缀需核对。该流程尚未真实运行验证。
 
 ## 当前验证状态
 
