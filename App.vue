@@ -1,24 +1,66 @@
 <script>
+	import {
+		checkForUpdate,
+		shouldSkipOptionalUpdate,
+	} from '@/common/appUpdate.js'
+
 	export default {
+		globalData: { pendingAppUpdate: null },
+		data() {
+			return {
+				checkingUpdate: false,
+				lastUpdateCheckAt: 0,
+			}
+		},
 		mounted() {
 			if (process.env.UNI_PLATFORM === 'app-plus') {
 				const closeSplash = () => {
 					this.$nextTick(() => {
 						setTimeout(() => {
 							if (typeof plus !== 'undefined') {
-								plus.navigator.closeSplashscreen();
-								uni.hideLoading();
+								plus.navigator.closeSplashscreen()
+								uni.hideLoading()
 							}
-						}, 1000);
-					});
-				};
+							this.scheduleUpdateCheck(800)
+						}, 1000)
+					})
+				}
 
 				if (typeof plus !== 'undefined') {
-					closeSplash();
-				} else {
-					document.addEventListener('plusready', closeSplash);
+					closeSplash()
+				} else if (typeof document !== 'undefined') {
+					document.addEventListener('plusready', closeSplash, { once: true })
 				}
 			}
+		},
+		onShow() {
+			this.scheduleUpdateCheck(500)
+		},
+		methods: {
+			scheduleUpdateCheck(delay = 0) {
+				if (process.env.UNI_PLATFORM !== 'app-plus') return
+				setTimeout(() => this.checkUpdate(), delay)
+			},
+			async checkUpdate() {
+				if (this.checkingUpdate || Date.now() - this.lastUpdateCheckAt < 10 * 60 * 1000) return
+				this.checkingUpdate = true
+				this.lastUpdateCheckAt = Date.now()
+				try {
+					const update = await checkForUpdate()
+					if (update && !shouldSkipOptionalUpdate(update)) {
+						this.promptUpdate(update)
+					}
+				} catch (error) {
+					// 版本检查失败不阻断正常业务，下一次启动或回前台继续检查。
+					console.warn('[app-update] version check failed', error)
+				} finally {
+					this.checkingUpdate = false
+				}
+			},
+			promptUpdate(update) {
+				this.globalData.pendingAppUpdate = update
+				uni.$emit('app-update-available', update)
+			},
 		},
 	}
 </script>

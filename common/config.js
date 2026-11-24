@@ -1,22 +1,31 @@
 const ENVIRONMENT = {
 	DEV_136: 'http://192.168.1.136:9080', //test
 	DEV_176: 'http://192.168.1.176:9080', //local
-	DEV_74: 'http://192.168.1.74:8080', //cj
+	DEV_74: 'http://192.168.1.74:8083', //cj
 	DEV_118: 'http://192.168.1.118:8083', //xp
+	DEV_130: 'http://192.168.1.130:8090', //开发测试后端
 	// #ifndef APP-PLUS
-	DEV_OUTSIDE: 'https://slot55xx2.ccfly.cc', //外测-h5端不需要地址
-	STABLE: 'https://tucanoccc.bet', //正式-h5端不需要地址
+	DEV_OUTSIDE: 'http://52.67.128.45:2009', //外测-h5端不需要地址
+	STABLE: 'https://admin.fcpg.app', //正式-h5端不需要地址
 	// #endif
 	// #ifdef APP-PLUS
-	DEV_OUTSIDE: 'https://slot55xx2.ccfly.cc', //外测
-	STABLE: 'https://tucanoccc.bet', //正式-app端需要地址 https://www.365bets.top/prod-api/  prod-api/
+	DEV_OUTSIDE: 'http://52.67.128.45:2009', //外测
+	STABLE: 'https://admin.fcpg.app', //正式-app端需要地址 https://www.365bets.top/prod-api/  prod-api/
 	// #endif
 };
 
 module.exports = {
 	ENVIRONMENT,
 	// 当前环境
-	CURRENT_ENVIRONMENT: ENVIRONMENT.DEV_OUTSIDE,
+	CURRENT_ENVIRONMENT: ENVIRONMENT.STABLE,
+	// 开发打包时通过 VUE_APP_UPDATE_BASE_URL 指向已部署的开发版本中心；未配置时沿用当前环境。
+	APP_UPDATE_BASE_URL: process.env.VUE_APP_UPDATE_BASE_URL || '',
+	// App 版本检查使用的固定标识，不随用户登录状态变化
+	// Historical Android APKs in the test database use this package name.
+	// The runtime still reads the installed package when the API is available.
+	APP_PACKAGE_ID: 'uni.app.UNI2BD90B9',
+	APP_UPDATE_CHANNEL: 'official',
+	APP_UPDATE_CHECK_PATH: '/api/app/version/check',
 	// //是否开发模式
 	// IS_DEV: true,
 	// // 开发环境地址

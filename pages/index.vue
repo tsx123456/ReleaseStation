@@ -26,6 +26,9 @@
 		<view>
 			<informationPopup ref="informationPopup" @todayAgainPopup="todayAgainPopup"></informationPopup>
 		</view>
+		<!-- #ifdef APP-PLUS -->
+		<app-update-dialog />
+		<!-- #endif -->
 	</view>
 </template>
 
@@ -34,6 +37,7 @@
 	import collectPage from '@/pages/collect/collect.vue'
 	import sharePage from '@/pages/share/share.vue'
 	import informationPopup from "@/component/informationPopup.vue"
+	import AppUpdateDialog from '@/component/AppUpdateDialog.vue'
 	import {
 		suporteGetList,
 	} from "@/api/information.js"
@@ -44,6 +48,7 @@
 			HomePage,
 			collectPage,
 			sharePage,
+			AppUpdateDialog,
 			informationPopup
 		},
 		data() {

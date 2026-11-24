@@ -1,0 +1,55 @@
+name: FCPG Android external test build
+
+on:
+  push:
+    branches: [test]
+    paths-ignore: ['**.md']
+  workflow_dispatch:
+
+jobs:
+  package:
+    if: ${{ github.ref == 'refs/heads/test' && vars.FCPG_TEST_RELEASE_ENABLED == 'true' }}
+    runs-on: [self-hosted, Windows, hbuilderx]
+    permissions:
+      contents: read
+    concurrency:
+      group: fcpg-android-test
+      cancel-in-progress: false
+    env:
+      HBUILDERX_CLI: ${{ vars.HBUILDERX_CLI }}
+      ANDROID_AAPT: ${{ vars.FCPG_ANDROID_AAPT }}
+      ANDROID_APKSIGNER_JAR: ${{ vars.FCPG_ANDROID_APKSIGNER_JAR }}
+      HBUILDER_DOWNLOAD_HOST: ${{ vars.FCPG_HBUILDER_DOWNLOAD_HOST }}
+      FCPG_UNI_MODULES_SOURCE: ${{ vars.FCPG_UNI_MODULES_SOURCE }}
+      ANDROID_CERT_FILE: ${{ vars.FCPG_TEST_CERT_FILE }}
+      ANDROID_CERT_ALIAS: ${{ vars.FCPG_TEST_CERT_ALIAS }}
+      ANDROID_CERT_PASSWORD: ${{ secrets.FCPG_TEST_CERT_PASSWORD }}
+      ANDROID_STORE_PASSWORD: ${{ secrets.FCPG_TEST_STORE_PASSWORD }}
+      APP_RELEASE_TOKEN: ${{ secrets.FCPG_TEST_RELEASE_TOKEN }}
+      APP_RELEASE_API_URL: http://52.67.128.45:2009/api/app/version/ci-upload
+      APP_PACKAGE_ID: uni.app.UNI2BD90B9
+      APP_CHANNEL: official
+      APP_UPDATE_MODE: optional
+      APP_PUBLISH: 'false'
+      VUE_APP_UPDATE_BASE_URL: http://52.67.128.45:2009
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare test configuration and version
+        shell: pwsh
+        run: |
+          node scripts/prepareExternalTest.js
+          if ($LASTEXITCODE -ne 0) { throw 'Test configuration failed' }
+          node scripts/setAppVersion.js
+          if ($LASTEXITCODE -ne 0) { throw 'Version preparation failed' }
+      - name: Install JavaScript dependencies
+        shell: pwsh
+        run: npm ci --legacy-peer-deps
+      - name: Prepare pinned uni_modules
+        shell: pwsh
+        run: node scripts/prepareRunnerModules.js
+      - name: Build and verify this run's Android APK
+        shell: pwsh
+        run: node scripts/buildExternalTestApk.js
+      - name: Upload a test draft
+        shell: pwsh
+        run: node scripts/publishRelease.js "$env:RUNNER_TEMP\fcpg-test-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT.apk"

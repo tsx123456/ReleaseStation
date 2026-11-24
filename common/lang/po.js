@@ -22,5 +22,17 @@ export default {
 	},
 	information: {
 		DontShowAgainToday: "Não mostrar novamente hoje",
+	},
+	appUpdate: {
+		title: "Atualização disponível",
+		version: "Nova versão",
+		defaultNotes: "Melhorias de estabilidade e experiência.",
+		later: "Mais tarde",
+		updateNow: "Atualizar agora",
+		retry: "Tentar novamente",
+		downloading: "Baixando...",
+		keepOpen: "Mantenha o aplicativo aberto durante o download.",
+		installStarted: "A instalação foi iniciada",
+		failed: "Falha na atualização",
 	}
 }
